@@ -14,11 +14,9 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
@@ -46,19 +44,21 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
 
-                if (!response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
                     return;
+                } else {
+                    textViewResult.setText("Reason of failure: " + response.code());
                 }
 
-                List<Post> posts = response.body();
+                /* List<Post> posts = response.body();
 
                 for (Post post : posts) {
                     String content = "";
                     content += "ID: " + post.getMessage() + "\n";
 
                     textViewResult.append(content);
-                }
+                } */
             }
 
             @Override

@@ -4,10 +4,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class Post {
 
-    @SerializedName("body")
-    private String message;
+    private String metaData;
 
-    public String getMessage() {
-        return message;
+    @SerializedName("body")
+    private String timeSeries;
+
+    private String dayData;
+
+    public String getMetaData() {
+        return metaData;
     }
+
+    public String getTimeSeries() {
+        return timeSeries;
+    }
+
+    public String getDayData() {
+        return dayData;
+    }
+
+
 }
