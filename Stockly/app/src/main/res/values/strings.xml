@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Stock.ly</string>
-
-    <string name="fragment_text">This is my home fragment</string>
+    <string name="nav_search_text"></string>
+    <string name="nav_news_text"></string>
 </resources>
