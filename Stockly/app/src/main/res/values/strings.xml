@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Stock.ly</string>
-    <string name="nav_search_text">Market</string>
+    <string name="nav_market_text">Market</string>
     <string name="nav_news_text">News</string>
 </resources>
