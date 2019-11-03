@@ -59,7 +59,7 @@ public class MarketFragment extends Fragment {
         if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
         } else {
-            set1 = new LineDataSet(values, "DataSet 1");
+            set1 = new LineDataSet(values, "bitch boi get rekt");
 
             set1.setAxisDependency(AxisDependency.LEFT);
             set1.setColor(ColorTemplate.getHoloBlue());
