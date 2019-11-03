@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarketFragment extends Fragment {
-    //implements OnSeekBarChangeListener, OnChartValueSelectedListener
 
     private LineChart chart;
 
