@@ -1,12 +1,10 @@
 package com.unisopron.stockly;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,8 +18,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.components.YAxis.AxisDependency;
 import com.google.gson.JsonObject;
 
 
@@ -82,100 +78,84 @@ public class MarketFragment extends Fragment {
                 JsonObject received = responseParser.responseToJsonObject(responseString);
 
                 // get metadata
-                metadata = new ArrayList<String>();
+                metadata = new ArrayList<>();
                 metadata = responseParser.getMetadata(received);
 
                 // get time series data
                 Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
 
-                timeSeriesData = new HashMap<String, Double>();
+                timeSeriesData = new HashMap<>();
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
 
+                // chart
+                chart = view.findViewById(R.id.chart);
 
+                ArrayList<Entry> values = new ArrayList<>();
+                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                List<String> xAxisValues = new ArrayList<>();
+
+                int i = 1;
+
+                for (String key : timeSeriesData.keySet()) {
+                    // can only pray this works
+                    values.add(new Entry(i, timeSeriesData.get(key).floatValue()));
+                    xAxisValues.add(key);
+                    i++;
+                }
+
+                LineDataSet set1;
+
+                set1 = new LineDataSet(values, "Closing price");
+                set1.setColor(Color.rgb(216,27,96));
+                set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                dataSets.add(set1);
+
+                // customization
+                chart.setTouchEnabled(true);
+                chart.setDragEnabled(true);
+                chart.setScaleEnabled(false);
+                chart.setPinchZoom(true);
+                chart.setDrawGridBackground(false);
+                chart.setExtraLeftOffset(15);
+                chart.setExtraRightOffset(15);
+                chart.getXAxis().setDrawGridLines(false);
+                chart.getAxisLeft().setDrawGridLines(false);
+                chart.getAxisRight().setDrawGridLines(false);
+
+                YAxis rightYAxis = chart.getAxisRight();
+                rightYAxis.setEnabled(false);
+                YAxis leftYAxis = chart.getAxisLeft();
+                leftYAxis.setEnabled(false);
+                XAxis topXAxis = chart.getXAxis();
+                topXAxis.setEnabled(false);
+
+                // axes
+                XAxis xAxis = chart.getXAxis();
+                xAxis.setGranularity(1f);
+                xAxis.setCenterAxisLabels(true);
+                xAxis.setEnabled(true);
+                xAxis.setDrawGridLines(false);
+                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+                set1.setLineWidth(4f);
+                set1.setCircleRadius(3f);
+                set1.setDrawValues(false);
+
+                chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
+
+                LineData data = new LineData(dataSets);
+                chart.setData(data);
+                chart.animateX(2000);
+                chart.invalidate();
+                chart.getLegend().setEnabled(false);
+                chart.getDescription().setEnabled(false);
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(view.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        chart = view.findViewById(R.id.chart);
-
-        ArrayList<Entry> values = new ArrayList<>();
-        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-        List<String> xAxisValues = new ArrayList<>();
-
-        int i = 1;
-
-        for (String key : timeSeriesData.keySet()) {
-            // can only pray this works
-            values.add(new Entry(i, timeSeriesData.get(key).floatValue()));
-            xAxisValues.add(key);
-            i++;
-        }
-
-        LineDataSet set1;
-
-        set1 = new LineDataSet(values, "Closing price");
-        set1.setColor(Color.rgb(216,27,96));
-        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSets.add(set1);
-
-        // customization
-        chart.setTouchEnabled(true);
-        chart.setDragEnabled(true);
-        chart.setScaleEnabled(false);
-        chart.setPinchZoom(false);
-        chart.setDrawGridBackground(false);
-        chart.setExtraLeftOffset(15);
-        chart.setExtraRightOffset(15);
-        chart.getXAxis().setDrawGridLines(false);
-        chart.getAxisLeft().setDrawGridLines(false);
-        chart.getAxisRight().setDrawGridLines(false);
-
-        YAxis rightYAxis = chart.getAxisRight();
-        rightYAxis.setEnabled(false);
-        YAxis leftYAxis = chart.getAxisLeft();
-        leftYAxis.setEnabled(false);
-        XAxis topXAxis = chart.getXAxis();
-        topXAxis.setEnabled(false);
-
-        // axes
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setTextSize(11f);
-        xAxis.setTextColor(Color.WHITE);
-        xAxis.setDrawGridLines(false);
-        xAxis.setDrawAxisLine(false);
-
-        YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
-        leftAxis.setAxisMaximum(200f);
-        leftAxis.setAxisMinimum(0f);
-        leftAxis.setDrawGridLines(true);
-        leftAxis.setGranularityEnabled(true);
-
-        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
-            set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
-        } else {
-            set1 = new LineDataSet(values, "bitch boi get rekt");
-
-            set1.setAxisDependency(AxisDependency.LEFT);
-            set1.setColor(ColorTemplate.getHoloBlue());
-            set1.setCircleColor(Color.WHITE);
-            set1.setLineWidth(2f);
-            set1.setCircleRadius(3f);
-            set1.setFillAlpha(65);
-            set1.setFillColor(ColorTemplate.getHoloBlue());
-            set1.setHighLightColor(Color.rgb(244, 117, 117));
-            set1.setDrawCircleHole(false);
-
-            LineData data = new LineData(set1);
-
-            data.setValueTextColor(Color.WHITE);
-            data.setValueTextSize(9f);
-
-            chart.setData(data);
-        }
 
         return view;
     }

@@ -35,7 +35,7 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
-
+        /*
         textViewResult = view.findViewById(R.id.text_view_result);
 
         final Retrofit retrofit = new Retrofit.Builder()
@@ -83,7 +83,7 @@ public class NewsFragment extends Fragment {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 textViewResult.setText(t.getMessage());
             }
-        });
+        }); */
 
         return view;
     }
