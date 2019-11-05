@@ -55,8 +55,6 @@ public class NewsFragment extends Fragment {
             }
         });
 
-
-
         return view;
     }
 
@@ -116,9 +114,9 @@ public class NewsFragment extends Fragment {
                         items.add(item);
                     }
                     else {
-                        mFeedTitle = title;
+                        /*mFeedTitle = title;
                         mFeedLink = link;
-                        mFeedDescription = description;
+                        mFeedDescription = description;*/
                     }
 
                     title = null;
@@ -139,50 +137,44 @@ public class NewsFragment extends Fragment {
     private class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
         private String urlLink;
-        private Context appContext;
 
         @Override
         protected void onPreExecute() {
             swipeRefreshLayout.setRefreshing(true);
+
             urlLink = "http://feeds.marketwatch.com/marketwatch/topstories/";
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            if (TextUtils.isEmpty(urlLink)) {
+            if (TextUtils.isEmpty(urlLink))
                 return false;
-            }
 
             try {
-
                 if(!urlLink.startsWith("http://") && !urlLink.startsWith("https://"))
                     urlLink = "http://" + urlLink;
 
                 URL url = new URL(urlLink);
                 InputStream inputStream = url.openConnection().getInputStream();
-
+                mFeedModelList = parseFeed(inputStream);
                 return true;
-
-            } catch (Exception e) {
-                Toast.makeText(appContext.getApplicationContext(),"Oops something went wrong!", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Log.e(TAG, "Error", e);
+            } catch (XmlPullParserException e) {
+                Log.e(TAG, "Error", e);
             }
             return false;
         }
 
         @Override
         protected void onPostExecute(Boolean success) {
-            mSwipeLayout.setRefreshing(false);
+            swipeRefreshLayout.setRefreshing(false);
 
             if (success) {
-                mFeedTitleTextView.setText("Feed Title: " + mFeedTitle);
-                mFeedDescriptionTextView.setText("Feed Description: " + mFeedDescription);
-                mFeedLinkTextView.setText("Feed Link: " + mFeedLink);
                 // Fill RecyclerView
-                mRecyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
+                recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
             } else {
-                Toast.makeText(MainActivity.this,
-                        "Enter a valid Rss feed url",
-                        Toast.LENGTH_LONG).show();
+                //
             }
         }
     }
