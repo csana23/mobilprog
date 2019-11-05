@@ -69,7 +69,7 @@ public class MarketFragment extends Fragment {
 
                 try {
                     responseString = response.body().string();
-                    System.out.println("eyyo" + responseString);
+                    // System.out.println("eyyo" + responseString);
                 } catch (Exception e) {
                     //
                 }
