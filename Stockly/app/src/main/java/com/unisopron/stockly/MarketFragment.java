@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,11 +115,11 @@ public class MarketFragment extends Fragment {
                 chart.setTouchEnabled(true);
                 chart.setDragEnabled(true);
                 chart.setScaleEnabled(false);
-                chart.setPinchZoom(true);
+                chart.setPinchZoom(true); // ez meg kiderul hogy mit csinal
                 chart.setDrawGridBackground(false);
                 chart.setExtraLeftOffset(15);
                 chart.setExtraRightOffset(15);
-                chart.getXAxis().setDrawGridLines(false);
+                chart.getXAxis().setDrawGridLines(true);
                 chart.getAxisLeft().setDrawGridLines(false);
                 chart.getAxisRight().setDrawGridLines(false);
 

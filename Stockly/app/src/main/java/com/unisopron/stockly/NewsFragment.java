@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.JsonObject;
 
@@ -35,55 +36,6 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
-        /*
-        textViewResult = view.findViewById(R.id.text_view_result);
-
-        final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.alphavantage.co")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        AlphaVantageApi alphaVantageApi = retrofit.create(AlphaVantageApi.class);
-
-        Call<ResponseBody> call = alphaVantageApi.getResponse();
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
-                    return;
-                }
-
-                try {
-                    responseString = response.body().string();
-                    System.out.println("eyyo" + responseString);
-                } catch (Exception e) {
-                    //
-                }
-
-                // get json text
-                responseParser = new ResponseParser();
-                JsonObject received = responseParser.responseToJsonObject(responseString);
-
-                // get metadata
-                metadata = new ArrayList<String>();
-                metadata = responseParser.getMetadata(received);
-
-                // get time series data
-                Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
-
-                timeSeriesData = new HashMap<String, Double>();
-                timeSeriesData = responseParser.parseTimeSeriesMap(ret);
-
-                textViewResult.setText(timeSeriesData.toString());
-            }
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
-            }
-        }); */
 
         return view;
     }
