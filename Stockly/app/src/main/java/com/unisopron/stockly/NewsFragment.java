@@ -118,6 +118,7 @@ public class NewsFragment extends Fragment {
                     if(isItem) {
                         RssFeedModel item = new RssFeedModel(title, link);
                         items.add(item);
+                        System.out.println("Title" + title + " link" + url);
                     }
                     else {
                         /*mFeedTitle = title;

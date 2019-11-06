@@ -40,7 +40,7 @@ public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(FeedModelViewHolder holder, int position) {
+    public void onBindViewHolder(FeedModelViewHolder holder, final int position) {
         final RssFeedModel rssFeedModel = mRssFeedModels.get(position);
         ((TextView)holder.rssFeedView.findViewById(R.id.titleText)).setText(rssFeedModel.title);
         //((TextView)holder.rssFeedView.findViewById(R.id.descriptionText)).setText(rssFeedModel.description);
