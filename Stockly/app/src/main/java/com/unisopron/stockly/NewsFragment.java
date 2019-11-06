@@ -116,7 +116,7 @@ public class NewsFragment extends Fragment {
 
                 if (title != null && link != null && description != null) {
                     if(isItem) {
-                        RssFeedModel item = new RssFeedModel(title, link, description);
+                        RssFeedModel item = new RssFeedModel(title, link);
                         items.add(item);
                     }
                     else {
