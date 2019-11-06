@@ -1,5 +1,6 @@
 package com.unisopron.stockly;
 
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import java.util.List;
 public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.FeedModelViewHolder> {
 
     private List<RssFeedModel> mRssFeedModels;
+    private TextView titleTextView;
 
     public static class FeedModelViewHolder extends RecyclerView.ViewHolder {
         private View rssFeedView;
@@ -40,6 +42,9 @@ public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.
         ((TextView)holder.rssFeedView.findViewById(R.id.titleText)).setText(rssFeedModel.title);
         //((TextView)holder.rssFeedView.findViewById(R.id.descriptionText)).setText(rssFeedModel.description);
         //((TextView)holder.rssFeedView.findViewById(R.id.linkText)).setText(rssFeedModel.link);
+
+        // lehet ide kene a click-es cuccot
+        // Linkify.addLinks((TextView)holder.rssFeedView.findViewById(R.id.titleText), Linkify.WEB_URLS);
     }
 
     @Override
