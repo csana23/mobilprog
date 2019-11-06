@@ -1,5 +1,7 @@
 package com.unisopron.stockly;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -54,6 +56,14 @@ public class NewsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void openWebPage(String url, ) {
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(view.getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     // parse rss
@@ -175,10 +185,6 @@ public class NewsFragment extends Fragment {
                 //
             }
         }
-    }
-
-    private void onClick() {
-
     }
 
 }

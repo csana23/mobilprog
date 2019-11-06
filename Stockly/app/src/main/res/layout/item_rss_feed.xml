@@ -17,7 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:onClick="onClick"/>
+            android:clickable="true"
+            android:linksClickable="true"
+            android:onClick="openWebpage"/>
 
     </RelativeLayout>
 
