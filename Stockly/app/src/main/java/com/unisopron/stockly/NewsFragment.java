@@ -1,6 +1,8 @@
 package com.unisopron.stockly;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,13 +30,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsFragment extends Fragment {
+public class NewsFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "NewsFragment";
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<RssFeedModel> mFeedModelList;
+    private TextView titleTextView;
 
     @Nullable
     @Override
@@ -55,14 +59,26 @@ public class NewsFragment extends Fragment {
             }
         });
 
+        // click on card logic
+        titleTextView = view.findViewById(R.id.titleText);
+        titleTextView.setOnClickListener(this);
+
         return view;
     }
 
-    public void openWebPage(String url, ) {
-        Uri webpage = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-        if (intent.resolveActivity(view.getPackageManager()) != null) {
-            startActivity(intent);
+    // handle click
+    @Override
+    public void onClick(View view) {
+        PackageManager pm = getActivity().getPackageManager();
+        
+        switch(view.getId()) {
+            case (R.id.titleText):
+                Uri webpage = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                break;
         }
     }
 
