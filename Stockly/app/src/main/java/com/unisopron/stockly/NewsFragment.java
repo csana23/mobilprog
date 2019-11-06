@@ -1,6 +1,5 @@
 package com.unisopron.stockly;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,7 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsFragment extends Fragment implements View.OnClickListener {
+public class NewsFragment extends Fragment {
 
     private static final String TAG = "NewsFragment";
 
@@ -59,27 +58,10 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        // click on card logic
+        // click method
         titleTextView = view.findViewById(R.id.titleText);
-        titleTextView.setOnClickListener(this);
 
         return view;
-    }
-
-    // handle click
-    @Override
-    public void onClick(View view) {
-        PackageManager pm = getActivity().getPackageManager();
-        
-        switch(view.getId()) {
-            case (R.id.titleText):
-                Uri webpage = Uri.parse(url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
-                break;
-        }
     }
 
     // parse rss
@@ -156,7 +138,6 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     // feed logic
     private class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -198,9 +179,12 @@ public class NewsFragment extends Fragment implements View.OnClickListener {
                 // Fill RecyclerView
                 recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
             } else {
-                //
+                // TODO
             }
         }
+
+
+
     }
 
 }

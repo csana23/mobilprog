@@ -19,7 +19,7 @@
             android:textStyle="bold"
             android:clickable="true"
             android:linksClickable="true"
-            android:onClick="openWebpage"/>
+            android:autoLink="web"/>
 
     </RelativeLayout>
 
