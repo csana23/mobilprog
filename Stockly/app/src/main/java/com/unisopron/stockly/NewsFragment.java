@@ -36,7 +36,6 @@ public class NewsFragment extends Fragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<RssFeedModel> mFeedModelList;
-    private TextView titleTextView;
 
     @Nullable
     @Override
@@ -58,9 +57,6 @@ public class NewsFragment extends Fragment {
             }
         });
 
-        // click method
-        titleTextView = view.findViewById(R.id.titleText);
-
         return view;
     }
 
@@ -69,6 +65,7 @@ public class NewsFragment extends Fragment {
         String title = null;
         String link = null;
         String description = null;
+
         boolean isItem = false;
         List<RssFeedModel> items = new ArrayList<>();
 
@@ -118,7 +115,7 @@ public class NewsFragment extends Fragment {
                     if(isItem) {
                         RssFeedModel item = new RssFeedModel(title, link);
                         items.add(item);
-                        System.out.println("Title" + title + " link" + url);
+                        System.out.println("Title" + title + " link" + link);
                     }
                     else {
                         /*mFeedTitle = title;

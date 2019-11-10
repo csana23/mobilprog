@@ -33,7 +33,6 @@ public class ResponseParser {
         String information;
         String symbol;
         String lastRefreshed;
-        String interval;
         String outputSize;
         String timeZone;
 
