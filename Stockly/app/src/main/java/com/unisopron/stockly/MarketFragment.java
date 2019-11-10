@@ -2,6 +2,7 @@ package com.unisopron.stockly;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +71,7 @@ public class MarketFragment extends Fragment {
 
                 try {
                     responseString = response.body().string();
-                    // System.out.println("eyyo" + responseString);
+                    System.out.println("eyyo" + responseString);
                 } catch (Exception e) {
                     //
                 }
@@ -85,8 +87,9 @@ public class MarketFragment extends Fragment {
                 // get time series data
                 Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
 
-                timeSeriesData = new HashMap<>();
+                timeSeriesData = new LinkedHashMap<>();
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
+                Log.d("timeSeriesData", timeSeriesData.toString());
 
                 // chart
                 chart = view.findViewById(R.id.chart);
@@ -95,11 +98,12 @@ public class MarketFragment extends Fragment {
                 ArrayList<ILineDataSet> dataSets = new ArrayList<>();
                 List<String> xAxisValues = new ArrayList<>();
 
-                int i = 1;
+                int i = 0;
 
                 for (String key : timeSeriesData.keySet()) {
                     // can only pray this works
-                    values.add(new Entry(i, timeSeriesData.get(key).floatValue()));
+                    Log.d("boi keys", key);
+                    values.add(new Entry(i, timeSeriesData.get(key).intValue()));
                     xAxisValues.add(key);
                     i++;
                 }
@@ -114,39 +118,39 @@ public class MarketFragment extends Fragment {
                 // customization
                 chart.setTouchEnabled(true);
                 chart.setDragEnabled(true);
-                chart.setScaleEnabled(false);
-                chart.setPinchZoom(true); // ez meg kiderul hogy mit csinal
+                chart.setScaleEnabled(true);
+                chart.setPinchZoom(true);
                 chart.setDrawGridBackground(false);
                 chart.setExtraLeftOffset(15);
                 chart.setExtraRightOffset(15);
                 chart.getXAxis().setDrawGridLines(true);
-                chart.getAxisLeft().setDrawGridLines(false);
-                chart.getAxisRight().setDrawGridLines(false);
+                chart.getAxisLeft().setDrawGridLines(true);
+                chart.getAxisRight().setDrawGridLines(true);
 
                 YAxis rightYAxis = chart.getAxisRight();
                 rightYAxis.setEnabled(false);
                 YAxis leftYAxis = chart.getAxisLeft();
-                leftYAxis.setEnabled(false);
+                leftYAxis.setEnabled(true);
                 XAxis topXAxis = chart.getXAxis();
                 topXAxis.setEnabled(false);
 
                 // axes
                 XAxis xAxis = chart.getXAxis();
-                xAxis.setGranularity(1f);
+                xAxis.setGranularity(10f);
                 xAxis.setCenterAxisLabels(true);
                 xAxis.setEnabled(true);
                 xAxis.setDrawGridLines(false);
                 xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
-                set1.setLineWidth(4f);
-                set1.setCircleRadius(3f);
+                set1.setLineWidth(2f);
+                //set1.setCircleRadius(0f);
                 set1.setDrawValues(false);
 
                 chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
 
                 LineData data = new LineData(dataSets);
                 chart.setData(data);
-                chart.animateX(2000);
+                //chart.animateX(2000);
                 chart.invalidate();
                 chart.getLegend().setEnabled(false);
                 chart.getDescription().setEnabled(false);
