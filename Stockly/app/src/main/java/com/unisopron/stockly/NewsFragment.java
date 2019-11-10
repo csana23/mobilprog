@@ -1,8 +1,5 @@
 package com.unisopron.stockly;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,7 +8,6 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +32,10 @@ public class NewsFragment extends Fragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<RssFeedModel> mFeedModelList;
+
+    private String mFeedTitle;
+    private String mFeedLink;
+    private String mFeedDescription;
 
     @Nullable
     @Override
@@ -113,14 +113,13 @@ public class NewsFragment extends Fragment {
 
                 if (title != null && link != null && description != null) {
                     if(isItem) {
-                        RssFeedModel item = new RssFeedModel(title, link);
+                        RssFeedModel item = new RssFeedModel(title, link, description);
                         items.add(item);
                         System.out.println("Title" + title + " link" + link);
-                    }
-                    else {
-                        /*mFeedTitle = title;
+                    } else {
+                        mFeedTitle = title;
                         mFeedLink = link;
-                        mFeedDescription = description;*/
+                        mFeedDescription = description;
                     }
 
                     title = null;

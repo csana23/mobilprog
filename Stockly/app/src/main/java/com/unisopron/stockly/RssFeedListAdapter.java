@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +39,10 @@ public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(FeedModelViewHolder holder, final int position) {
+    public void onBindViewHolder(FeedModelViewHolder holder,  int position) {
         final RssFeedModel rssFeedModel = mRssFeedModels.get(position);
         ((TextView)holder.rssFeedView.findViewById(R.id.titleText)).setText(rssFeedModel.title);
         //((TextView)holder.rssFeedView.findViewById(R.id.descriptionText)).setText(rssFeedModel.description);
-        //((TextView)holder.rssFeedView.findViewById(R.id.linkText)).setText(rssFeedModel.link);
         holder.rssFeedView.findViewById(R.id.titleText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
