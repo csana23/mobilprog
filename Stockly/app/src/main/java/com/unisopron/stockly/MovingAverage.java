@@ -33,33 +33,13 @@ public class MovingAverage {
         sum += val;
         list.offer(val);
 
-        if(list.size()<=size){
+        if(list.size() <= period) {
             return sum/list.size();
         }
 
         sum -= list.poll();
 
-        return sum/size;
-    }
-
-    public LinkedList<Double> getMovingAverages(LinkedList<Double> set) {
-        int period = 10;
-        double sum = 0;
-        LinkedList<Double> list = new LinkedList<>();
-
-        for (double x : set) {
-            sum += x;
-            list.offer(x);
-
-            if (list.size() <= period) {
-                set.add(sum/list.size());
-            }
-            sum -= list.poll();
-
-            set.add(sum/period);
-        }
-
-        return set;
+        return sum/period;
     }
 
 }
