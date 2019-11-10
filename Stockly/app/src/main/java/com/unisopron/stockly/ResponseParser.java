@@ -1,12 +1,17 @@
 package com.unisopron.stockly;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,13 +54,13 @@ public class ResponseParser {
     }
 
     public Map<String, Map<String, Double>> getTimeSeries(JsonObject received) {
-        Map<String, Map<String, Double>> ret = new HashMap<>();
+        Map<String, Map<String, Double>> ret = new LinkedHashMap<>();
 
         try {
             JsonObject timeSeries = received.get("Time Series (Daily)").getAsJsonObject();
 
             for (Map.Entry<String, JsonElement> e : timeSeries.entrySet()) {
-                Map<String, Double> toAdd = new HashMap<>();
+                Map<String, Double> toAdd = new LinkedHashMap<>();
                 JsonObject obj = (JsonObject) e.getValue();
                 toAdd.put("close", obj.get("4. close").getAsDouble());
                 toAdd.put("volume", obj.get("5. volume").getAsDouble());
@@ -68,14 +73,28 @@ public class ResponseParser {
         return ret;
     }
 
-    public  HashMap<String, Double> parseTimeSeriesMap(Map<String, Map<String, Double>> timeSeriesData) {
+    public  LinkedHashMap<String, Double> parseTimeSeriesMap(Map<String, Map<String, Double>> timeSeriesData) {
         LinkedHashMap<String, Double> closePrices = new LinkedHashMap<String, Double>();
 
+        ArrayList<String> timeStamps = new ArrayList<>();
+
         for (String timeStamp : timeSeriesData.keySet()) {
+           /* double closePrice = timeSeriesData.get(timeStamp).get("close");
+
+            closePrices.put(timeStamp, closePrice);*/
+           timeStamps.add(timeStamp);
+        }
+
+        Collections.reverse(timeStamps);
+        Log.d("reversedkeys ", timeStamps.toString());
+
+        for (String timeStamp : timeStamps) {
             double closePrice = timeSeriesData.get(timeStamp).get("close");
 
             closePrices.put(timeStamp, closePrice);
         }
+
+        Log.d("closePrices: ", closePrices.toString());
 
         return closePrices;
     }

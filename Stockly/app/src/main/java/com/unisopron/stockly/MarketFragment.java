@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -110,7 +111,7 @@ public class MarketFragment extends Fragment {
 
                 LineDataSet set1;
 
-                set1 = new LineDataSet(values, "Closing price");
+                set1 = new LineDataSet(values, "DJX point at market closure");
                 set1.setColor(Color.rgb(216,27,96));
                 set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
                 dataSets.add(set1);
@@ -136,14 +137,14 @@ public class MarketFragment extends Fragment {
 
                 // axes
                 XAxis xAxis = chart.getXAxis();
-                xAxis.setGranularity(10f);
+                xAxis.setGranularity(5f);
                 xAxis.setCenterAxisLabels(true);
                 xAxis.setEnabled(true);
                 xAxis.setDrawGridLines(false);
                 xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
                 set1.setLineWidth(2f);
-                //set1.setCircleRadius(0f);
+                //set1.setCircleRadius(2f);
                 set1.setDrawValues(false);
 
                 chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
@@ -152,7 +153,11 @@ public class MarketFragment extends Fragment {
                 chart.setData(data);
                 //chart.animateX(2000);
                 chart.invalidate();
-                chart.getLegend().setEnabled(false);
+
+                // legend
+                Legend legend = chart.getLegend();
+                legend.setEnabled(true);
+                legend.setForm(Legend.LegendForm.LINE);
                 chart.getDescription().setEnabled(false);
             }
 
