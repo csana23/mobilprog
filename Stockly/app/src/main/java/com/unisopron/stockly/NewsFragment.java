@@ -33,10 +33,6 @@ public class NewsFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<RssFeedModel> mFeedModelList;
 
-    private String mFeedTitle;
-    private String mFeedLink;
-    private String mFeedDescription;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,7 +60,6 @@ public class NewsFragment extends Fragment {
     public List<RssFeedModel> parseFeed(InputStream inputStream) throws XmlPullParserException, IOException {
         String title = null;
         String link = null;
-        String description = null;
 
         boolean isItem = false;
         List<RssFeedModel> items = new ArrayList<>();
@@ -82,7 +77,7 @@ public class NewsFragment extends Fragment {
                 if(name == null)
                     continue;
 
-                if(eventType == XmlPullParser.END_TAG) {
+                /*if(eventType == XmlPullParser.END_TAG) {
                     if(name.equalsIgnoreCase("item")) {
                         isItem = false;
                     }
@@ -94,7 +89,17 @@ public class NewsFragment extends Fragment {
                         isItem = true;
                         continue;
                     }
-                }
+                }*/
+
+                if (
+                        eventType == XmlPullParser.START_TAG
+                                && name.equalsIgnoreCase("item")
+                ) { isItem = true; }
+
+                if (
+                        eventType == XmlPullParser.END_TAG
+                                && name.equalsIgnoreCase("item")
+                ) { isItem = true; }
 
                 Log.d("NewsFragment", "Parsing name ==> " + name);
                 String result = "";
@@ -107,24 +112,17 @@ public class NewsFragment extends Fragment {
                     title = result;
                 } else if (name.equalsIgnoreCase("link")) {
                     link = result;
-                } else if (name.equalsIgnoreCase("description")) {
-                    description = result;
                 }
 
-                if (title != null && link != null && description != null) {
+                if (title != null && link != null) {
                     if(isItem) {
-                        RssFeedModel item = new RssFeedModel(title, link, description);
+                        RssFeedModel item = new RssFeedModel(title, link);
                         items.add(item);
-                        System.out.println("Title" + title + " link" + link);
-                    } else {
-                        mFeedTitle = title;
-                        mFeedLink = link;
-                        mFeedDescription = description;
+                        //System.out.println("Title" + title + " link" + link);
                     }
 
                     title = null;
                     link = null;
-                    description = null;
                     isItem = false;
                 }
             }
