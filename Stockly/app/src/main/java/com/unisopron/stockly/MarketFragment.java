@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class MarketFragment extends Fragment {
     private String responseString;
     private ResponseParser responseParser;
     private ArrayList<String> metadata;
-    private HashMap<String, Double> timeSeriesData;
+    private LinkedHashMap<String, Double> timeSeriesData;
 
     @Nullable
     @Override
@@ -72,9 +73,8 @@ public class MarketFragment extends Fragment {
 
                 try {
                     responseString = response.body().string();
-                    System.out.println("eyyo" + responseString);
                 } catch (Exception e) {
-                    //
+                    Log.d("responseString", "Something went woring with responseString");
                 }
 
                 // get json text
@@ -92,6 +92,15 @@ public class MarketFragment extends Fragment {
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
                 Log.d("timeSeriesData", timeSeriesData.toString());
 
+                // getting moving average
+                MovingAverage ma = new MovingAverage();
+
+                LinkedList<Double> dataBoi = new LinkedList<>();
+                dataBoi = ma.getData(timeSeriesData);
+                Log.d("data values: ", dataBoi.toString());
+
+                LinkedList<Double> averages = ma.getMovingAverages(dataBoi);
+                Log.d("ma s: ", averages.toString());
                 // chart
                 chart = view.findViewById(R.id.chart);
 
