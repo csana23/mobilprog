@@ -1,17 +1,23 @@
 package com.unisopron.stockly;
 
-import android.service.autofill.Dataset;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MovingAverage {
+
+    int period;
+    double sum;
+    LinkedList<Double> list;
 
     public MovingAverage() {
         this.period = 10;
         this.sum = 0;
+        list = new LinkedList<>();
     }
 
     public LinkedList<Double> getData(LinkedHashMap<String, Double> timeSeriesData) {
@@ -23,25 +29,35 @@ public class MovingAverage {
         return extractedData;
     }
 
-    public void addData(double num) {
-        sum += num;
-        dataSet.add(num);
+    public double next(double val) {
+        sum += val;
+        list.offer(val);
 
-        if (dataSet.size() > period)
-        {
-            sum -= dataSet.remove();
+        if(list.size()<=size){
+            return sum/list.size();
         }
-    }
 
-    public double getMean() {
-        return sum / period;
+        sum -= list.poll();
+
+        return sum/size;
     }
 
     public LinkedList<Double> getMovingAverages(LinkedList<Double> set) {
-        int period;
-        double sum;
-        double num;
-        Queue<Double> dataSet = new LinkedList<>();
+        int period = 10;
+        double sum = 0;
+        LinkedList<Double> list = new LinkedList<>();
+
+        for (double x : set) {
+            sum += x;
+            list.offer(x);
+
+            if (list.size() <= period) {
+                set.add(sum/list.size());
+            }
+            sum -= list.poll();
+
+            set.add(sum/period);
+        }
 
         return set;
     }
