@@ -1,2 +1,2 @@
 # MOBILPROG
-Source code for this year's mobilprog class.
+Source code and documentation for this year's mobilprog class.
