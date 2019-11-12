@@ -8,6 +8,7 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,20 +39,26 @@ public class NewsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
 
-        recyclerView = view.findViewById(R.id.recyclerView);
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        try {
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            recyclerView = view.findViewById(R.id.recyclerView);
+            swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
-        // automatically start fetching
-        new FetchFeedTask().execute((Void) null);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new FetchFeedTask().execute((Void) null);
-            }
-        });
+            // automatically start fetching
+            new FetchFeedTask().execute((Void) null);
+
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    new FetchFeedTask().execute((Void) null);
+                }
+            });
+
+        } catch (Exception e) {
+            Toast.makeText(view.getContext(), "Something happened - try connecting to the Internet!", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
@@ -101,7 +108,7 @@ public class NewsFragment extends Fragment {
                                 && name.equalsIgnoreCase("item")
                 ) { isItem = true; }
 
-                Log.d("NewsFragment", "Parsing name ==> " + name);
+                Log.d(TAG, "Parsing name ==> " + name);
                 String result = "";
                 if (xmlPullParser.next() == XmlPullParser.TEXT) {
                     result = xmlPullParser.getText();
@@ -118,7 +125,6 @@ public class NewsFragment extends Fragment {
                     if(isItem) {
                         RssFeedModel item = new RssFeedModel(title, link);
                         items.add(item);
-                        //System.out.println("Title" + title + " link" + link);
                     }
 
                     title = null;
@@ -147,6 +153,7 @@ public class NewsFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
+
             if (TextUtils.isEmpty(urlLink))
                 return false;
 
@@ -158,9 +165,7 @@ public class NewsFragment extends Fragment {
                 InputStream inputStream = url.openConnection().getInputStream();
                 mFeedModelList = parseFeed(inputStream);
                 return true;
-            } catch (IOException e) {
-                Log.e(TAG, "Error", e);
-            } catch (XmlPullParserException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Error", e);
             }
             return false;
@@ -174,14 +179,10 @@ public class NewsFragment extends Fragment {
                 // Fill RecyclerView
                 recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
             } else {
-                // TODO
+                Log.d("onPostExecute", "Something happened...");
             }
         }
-
-
-
     }
-
 }
 
 

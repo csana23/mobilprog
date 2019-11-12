@@ -24,8 +24,6 @@ import com.google.gson.JsonObject;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +72,7 @@ public class MarketFragment extends Fragment {
                 try {
                     responseString = response.body().string();
                 } catch (Exception e) {
-                    Log.d("responseString", "Something went woring with responseString");
+                    Log.d("responseString", "Something went wrong with responseString");
                 }
 
                 // get json text
@@ -92,7 +90,7 @@ public class MarketFragment extends Fragment {
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
                 Log.d("timeSeriesData", timeSeriesData.toString());
 
-                // getting moving average
+                // getting moving average - prolonged implementation...
                 /*MovingAverage ma = new MovingAverage();
 
                 LinkedList<Double> dataBoi = new LinkedList<>();
@@ -122,7 +120,7 @@ public class MarketFragment extends Fragment {
 
                 for (String key : timeSeriesData.keySet()) {
                     // can only pray this works
-                    Log.d("boi keys", key);
+                    Log.d("keys", key);
                     values.add(new Entry(i, timeSeriesData.get(key).intValue()));
                     xAxisValues.add(key);
                     i++;
@@ -143,11 +141,14 @@ public class MarketFragment extends Fragment {
                 set1 = new LineDataSet(values, "DJX point on market close");
                 set1.setColor(Color.rgb(216,27,96));
                 set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                set1.setDrawCircles(false);
                 dataSets.add(set1);
 
                 set2 = new LineDataSet(avgValues, "Average of points");
                 set2.setColor(Color.rgb(0,133,119));
-                set2.setMode(LineDataSet.Mode.STEPPED);
+                set2.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                set2.enableDashedLine(10f, 5f, 5f);
+                set2.setDrawCircles(false);
                 dataSets.add(set2);
 
                 // customization
@@ -178,7 +179,6 @@ public class MarketFragment extends Fragment {
                 xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
                 set1.setLineWidth(2f);
-                //set1.setCircleRadius(2f);
                 set1.setDrawValues(false);
 
                 set2.setLineWidth(2f);
@@ -188,7 +188,6 @@ public class MarketFragment extends Fragment {
 
                 LineData data = new LineData(dataSets);
                 chart.setData(data);
-                //chart.animateX(2000);
                 chart.invalidate();
 
                 // legend

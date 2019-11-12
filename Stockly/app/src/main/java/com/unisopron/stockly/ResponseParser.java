@@ -6,13 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -67,7 +62,7 @@ public class ResponseParser {
                 ret.put(e.getKey(), toAdd);
             }
         } catch (Exception e) {
-            //
+            Log.d("Gson", "Gson problem");
         }
 
         return ret;

@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 public class MovingAverage {
 
-    int period;
+    /*int period;
     double sum;
     LinkedList<Double> list;
 
@@ -34,6 +34,6 @@ public class MovingAverage {
         sum -= list.poll();
 
         return sum/period;
-    }
+    }*/
 
 }
