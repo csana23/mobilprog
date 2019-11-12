@@ -1,13 +1,7 @@
 package com.unisopron.stockly;
 
-import android.util.Log;
-
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class MovingAverage {
 
     int period;
