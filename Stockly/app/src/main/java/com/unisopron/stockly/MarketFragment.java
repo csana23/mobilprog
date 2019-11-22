@@ -43,7 +43,7 @@ public class MarketFragment extends Fragment {
     private String responseString;
     private ResponseParser responseParser;
     private ArrayList<String> metadata;
-    private LinkedHashMap<String, Double> timeSeriesData;
+    private LinkedList<LinkedHashMap> timeSeriesData;
 
     @Nullable
     @Override
@@ -86,19 +86,9 @@ public class MarketFragment extends Fragment {
                 // get time series data
                 Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
 
-                timeSeriesData = new LinkedHashMap<>();
+                timeSeriesData = new LinkedList<>();
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
                 Log.d("timeSeriesData", timeSeriesData.toString());
-
-                // getting moving average - prolonged implementation...
-                /*MovingAverage ma = new MovingAverage();
-
-                LinkedList<Double> dataBoi = new LinkedList<>();
-                dataBoi = ma.getData(timeSeriesData);
-                Log.d("data values: ", dataBoi.toString());
-
-                LinkedList<Double> averages = ma.getMovingAverages(dataBoi);
-                Log.d("ma s: ", averages.toString());*/
 
                 // getting averages
                 Average avg = new Average();
@@ -126,30 +116,13 @@ public class MarketFragment extends Fragment {
                     i++;
                 }
 
-                ArrayList<Entry> avgValues = new ArrayList<>();
-
-                i = 0;
-
-                for (double x : averages) {
-                    avgValues.add(new Entry(i, (float)x));
-                    i += 10;
-                }
-
                 LineDataSet set1;
-                LineDataSet set2;
 
                 set1 = new LineDataSet(values, "DJX point on market close");
                 set1.setColor(Color.rgb(216,27,96));
                 set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
                 set1.setDrawCircles(false);
                 dataSets.add(set1);
-
-                set2 = new LineDataSet(avgValues, "Average of points");
-                set2.setColor(Color.rgb(0,133,119));
-                set2.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                set2.enableDashedLine(10f, 5f, 5f);
-                set2.setDrawCircles(false);
-                dataSets.add(set2);
 
                 // customization
                 chart.setTouchEnabled(true);
@@ -180,9 +153,6 @@ public class MarketFragment extends Fragment {
 
                 set1.setLineWidth(2f);
                 set1.setDrawValues(false);
-
-                set2.setLineWidth(2f);
-                set2.setDrawValues(false);
 
                 chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
 

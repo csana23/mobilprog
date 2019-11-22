@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class ResponseParser {
@@ -57,8 +58,10 @@ public class ResponseParser {
             for (Map.Entry<String, JsonElement> e : timeSeries.entrySet()) {
                 Map<String, Double> toAdd = new LinkedHashMap<>();
                 JsonObject obj = (JsonObject) e.getValue();
-                toAdd.put("close", obj.get("4. close").getAsDouble());
-                toAdd.put("volume", obj.get("5. volume").getAsDouble());
+                toAdd.put("", obj.get("1. open").getAsDouble());
+                toAdd.put("open", obj.get("2. high").getAsDouble());
+                toAdd.put("close", obj.get("3. low").getAsDouble());
+                toAdd.put("volume", obj.get("4. close").getAsDouble());
                 ret.put(e.getKey(), toAdd);
             }
         } catch (Exception e) {
@@ -68,10 +71,16 @@ public class ResponseParser {
         return ret;
     }
 
-    public  LinkedHashMap<String, Double> parseTimeSeriesMap(Map<String, Map<String, Double>> timeSeriesData) {
+    public  LinkedList<LinkedHashMap> parseTimeSeriesMap(Map<String, Map<String, Double>> timeSeriesData) {
+        LinkedHashMap<String, Double> openPrices = new LinkedHashMap<String, Double>();
+        LinkedHashMap<String, Double> highPrices = new LinkedHashMap<String, Double>();
+        LinkedHashMap<String, Double> lowPrices = new LinkedHashMap<String, Double>();
         LinkedHashMap<String, Double> closePrices = new LinkedHashMap<String, Double>();
 
         ArrayList<String> timeStamps = new ArrayList<>();
+
+        // to return a linkedlist of linkedhashmaps
+        LinkedList<LinkedHashMap> prices = new LinkedList<>();
 
         for (String timeStamp : timeSeriesData.keySet()) {
            /* double closePrice = timeSeriesData.get(timeStamp).get("close");
@@ -84,13 +93,26 @@ public class ResponseParser {
         Log.d("reversedkeys ", timeStamps.toString());
 
         for (String timeStamp : timeStamps) {
+            double openPrice = timeSeriesData.get(timeStamp).get("open");
+            double highPrice = timeSeriesData.get(timeStamp).get("high");
+            double lowPrice = timeSeriesData.get(timeStamp).get("low");
             double closePrice = timeSeriesData.get(timeStamp).get("close");
 
+            openPrices.put(timeStamp, openPrice);
+            highPrices.put(timeStamp, highPrice);
+            lowPrices.put(timeStamp, lowPrice);
             closePrices.put(timeStamp, closePrice);
         }
-
+        Log.d("openPrices: ", openPrices.toString());
+        Log.d("highPrices: ", highPrices.toString());
+        Log.d("lowPrices: ", lowPrices.toString());
         Log.d("closePrices: ", closePrices.toString());
 
-        return closePrices;
+        prices.add(openPrices);
+        prices.add(highPrices);
+        prices.add(lowPrices);
+        prices.add(closePrices);
+
+        return prices;
     }
 }
