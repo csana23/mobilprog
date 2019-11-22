@@ -98,7 +98,6 @@ public class MarketFragment extends Fragment {
 
                 // candle stick chart
                 ArrayList<CandleEntry> values = new ArrayList<>();
-                CandleDataSet dataSet =
 
                 int i = 0;
 
@@ -110,7 +109,8 @@ public class MarketFragment extends Fragment {
                     i++;
                 }
 
-                LineDataSet set1;
+                // LineDataSet set1;
+                CandleDataSet set1;
 
                 set1 = new LineDataSet(values, "DJX point on market close");
                 set1.setColor(Color.rgb(216,27,96));
