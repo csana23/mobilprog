@@ -12,10 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -38,11 +41,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MarketFragment extends Fragment {
 
-    private LineChart chart;
+    private CandleStickChart chart;
 
     private String responseString;
     private ResponseParser responseParser;
-    private ArrayList<String> metadata;
     private LinkedList<LinkedHashMap> timeSeriesData;
 
     @Nullable
@@ -79,10 +81,6 @@ public class MarketFragment extends Fragment {
                 responseParser = new ResponseParser();
                 JsonObject received = responseParser.responseToJsonObject(responseString);
 
-                // get metadata
-                metadata = new ArrayList<>();
-                metadata = responseParser.getMetadata(received);
-
                 // get time series data
                 Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
 
@@ -90,21 +88,17 @@ public class MarketFragment extends Fragment {
                 timeSeriesData = responseParser.parseTimeSeriesMap(ret);
                 Log.d("timeSeriesData", timeSeriesData.toString());
 
-                // getting averages
-                Average avg = new Average();
-
-                LinkedList<Double> dataForAvg = new LinkedList<>();
-                dataForAvg = avg.getData(timeSeriesData);
-
-                LinkedList<Double> averages = avg.getAverage(dataForAvg);
-                Log.d("averages: ", averages.toString());
-
                 // chart
                 chart = view.findViewById(R.id.chart);
 
+                // old
                 ArrayList<Entry> values = new ArrayList<>();
                 ArrayList<ILineDataSet> dataSets = new ArrayList<>();
                 List<String> xAxisValues = new ArrayList<>();
+
+                // candle stick chart
+                ArrayList<CandleEntry> values = new ArrayList<>();
+                CandleDataSet dataSet =
 
                 int i = 0;
 
