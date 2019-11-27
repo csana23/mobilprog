@@ -58,10 +58,10 @@ public class ResponseParser {
             for (Map.Entry<String, JsonElement> e : timeSeries.entrySet()) {
                 Map<String, Double> toAdd = new LinkedHashMap<>();
                 JsonObject obj = (JsonObject) e.getValue();
-                toAdd.put("", obj.get("1. open").getAsDouble());
-                toAdd.put("open", obj.get("2. high").getAsDouble());
-                toAdd.put("close", obj.get("3. low").getAsDouble());
-                toAdd.put("volume", obj.get("4. close").getAsDouble());
+                toAdd.put("open", obj.get("1. open").getAsDouble());
+                toAdd.put("high", obj.get("2. high").getAsDouble());
+                toAdd.put("low", obj.get("3. low").getAsDouble());
+                toAdd.put("close", obj.get("4. close").getAsDouble());
                 ret.put(e.getKey(), toAdd);
             }
         } catch (Exception e) {

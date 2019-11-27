@@ -1,6 +1,7 @@
 package com.unisopron.stockly;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +14,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.gson.JsonObject;
 
 
@@ -46,6 +46,11 @@ public class MarketFragment extends Fragment {
     private String responseString;
     private ResponseParser responseParser;
     private LinkedList<LinkedHashMap> timeSeriesData;
+
+    private LinkedHashMap<String, Double> openPrices = new LinkedHashMap<String, Double>();
+    private LinkedHashMap<String, Double> highPrices = new LinkedHashMap<String, Double>();
+    private LinkedHashMap<String, Double> lowPrices = new LinkedHashMap<String, Double>();
+    private LinkedHashMap<String, Double> closePrices = new LinkedHashMap<String, Double>();
 
     @Nullable
     @Override
@@ -92,31 +97,62 @@ public class MarketFragment extends Fragment {
                 chart = view.findViewById(R.id.chart);
 
                 // old
-                ArrayList<Entry> values = new ArrayList<>();
-                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                /* ArrayList<Entry> values = new ArrayList<>();
+                ArrayList<ILineDataSet> dataSets = new ArrayList<>();*/
                 List<String> xAxisValues = new ArrayList<>();
 
                 // candle stick chart
                 ArrayList<CandleEntry> values = new ArrayList<>();
 
-                int i = 0;
+                // int i = 0;
 
-                for (String key : timeSeriesData.keySet()) {
+                /*for (String key : timeSeriesData.keySet()) {
                     // can only pray this works
                     Log.d("keys", key);
                     values.add(new Entry(i, timeSeriesData.get(key).intValue()));
                     xAxisValues.add(key);
                     i++;
+                } */
+
+                // load up linkedHashMaps
+                for (int i = 0; i < timeSeriesData.size(); i++) {
+                    openPrices = timeSeriesData.get(0);
+                    highPrices = timeSeriesData.get(1);
+                    lowPrices = timeSeriesData.get(2);
+                    closePrices = timeSeriesData.get(3);
+                }
+
+                int j = 0;
+
+                // load up values with <CandleEntry>
+                for (String key : openPrices.keySet()) {
+                    values.add(new CandleEntry(
+                            j,
+                            highPrices.get(key).floatValue(),
+                            lowPrices.get(key).floatValue(),
+                            openPrices.get(key).floatValue(),
+                            closePrices.get(key).floatValue())
+                    );
+                    xAxisValues.add(key);
+                    j++;
                 }
 
                 // LineDataSet set1;
                 CandleDataSet set1;
 
-                set1 = new LineDataSet(values, "DJX point on market close");
+                set1 = new CandleDataSet(values, ".DJX points");
                 set1.setColor(Color.rgb(216,27,96));
-                set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                set1.setDrawCircles(false);
-                dataSets.add(set1);
+                // set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                // set1.setDrawCircles(false);
+                set1.setShadowColor(Color.BLUE);
+                set1.setShadowWidth(0.8f);
+                set1.setDecreasingColor(Color.rgb(255, 0, 0));
+                set1.setDecreasingPaintStyle(Paint.Style.FILL);
+                set1.setIncreasingColor(Color.rgb(0, 255, 0));
+                set1.setIncreasingPaintStyle(Paint.Style.FILL);
+                set1.setNeutralColor(Color.LTGRAY);
+                set1.setDrawValues(false);
+                // dataSets.add(set1);
 
                 // customization
                 chart.setTouchEnabled(true);
@@ -129,6 +165,8 @@ public class MarketFragment extends Fragment {
                 chart.getXAxis().setDrawGridLines(true);
                 chart.getAxisLeft().setDrawGridLines(true);
                 chart.getAxisRight().setDrawGridLines(true);
+                chart.setHighlightPerDragEnabled(true);
+                chart.setDrawBorders(false);
 
                 YAxis rightYAxis = chart.getAxisRight();
                 rightYAxis.setEnabled(false);
@@ -145,12 +183,11 @@ public class MarketFragment extends Fragment {
                 xAxis.setDrawGridLines(false);
                 xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
-                set1.setLineWidth(2f);
                 set1.setDrawValues(false);
 
                 chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
 
-                LineData data = new LineData(dataSets);
+                CandleData data = new CandleData(set1);
                 chart.setData(data);
                 chart.invalidate();
 
