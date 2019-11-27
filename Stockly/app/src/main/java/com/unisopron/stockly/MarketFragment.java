@@ -20,9 +20,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.data.ChartData;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.google.gson.JsonObject;
 
 
@@ -65,7 +62,7 @@ public class MarketFragment extends Fragment {
 
         AlphaVantageApi alphaVantageApi = retrofit.create(AlphaVantageApi.class);
 
-        Call<ResponseBody> call = alphaVantageApi.getResponse();
+        Call<ResponseBody> call = alphaVantageApi.getResponse("query?function=TIME_SERIES_DAILY&symbol=.DJX&outputsize=compact&apikey=BMOZOE9D5X9ECSP9");
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
