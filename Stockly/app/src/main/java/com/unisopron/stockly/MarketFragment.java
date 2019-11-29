@@ -150,7 +150,7 @@ public class MarketFragment extends Fragment {
                                     // LineDataSet set1;
                                     CandleDataSet set1;
 
-                                    set1 = new CandleDataSet(values, ".DJX points");
+                                    set1 = new CandleDataSet(values, ticker);
                                     set1.setColor(Color.rgb(216, 27, 96));
                                     set1.setShadowColor(Color.BLUE);
                                     set1.setShadowWidth(0.8f);
