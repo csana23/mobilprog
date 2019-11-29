@@ -3,33 +3,26 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/dowj"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/input_field"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="@string/dowj_text"/>
+            android:text="@string/default_ticker"
+            android:maxLength="10"
+            android:singleLine="true" />
 
         <Button
-            android:id="@+id/sp"
+            android:id="@+id/get_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/sp_text"/>
+            android:text="@string/get" />
 
-        <Button
-            android:id="@+id/nasdaq"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="@string/nasdaq_text"/>
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.github.mikephil.charting.charts.CandleStickChart
         android:id="@+id/chart"

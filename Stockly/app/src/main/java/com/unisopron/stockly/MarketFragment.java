@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -49,6 +51,9 @@ public class MarketFragment extends Fragment {
     private LinkedHashMap<String, Double> lowPrices = new LinkedHashMap<String, Double>();
     private LinkedHashMap<String, Double> closePrices = new LinkedHashMap<String, Double>();
 
+    private String ticker;
+    private AlphaVantageApi alphaVantageApi;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,150 +61,162 @@ public class MarketFragment extends Fragment {
 
         // get data for chart
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.alphavantage.co")
+                .baseUrl("https://www.alphavantage.co/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        AlphaVantageApi alphaVantageApi = retrofit.create(AlphaVantageApi.class);
+        alphaVantageApi = retrofit.create(AlphaVantageApi.class);
 
-        Call<ResponseBody> call = alphaVantageApi.getResponse("query?function=TIME_SERIES_DAILY&symbol=.DJX&outputsize=compact&apikey=BMOZOE9D5X9ECSP9");
+        // queryBuilder
 
-        call.enqueue(new Callback<ResponseBody>() {
+
+        // handle button event
+        final EditText inputField = view.findViewById(R.id.input_field);
+        Button getButton = view.findViewById(R.id.get_button);
+
+        getButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onClick(View v) {
+                if (v.getId() == R.id.get_button) {
+                    ticker = inputField.getText().toString();
 
-                if (!response.isSuccessful()) {
-                    Toast.makeText(view.getContext(), "@string/error_message", Toast.LENGTH_SHORT).show();
-                    return;
+                    String queryString = "query?function=TIME_SERIES_DAILY&symbol=" + ticker + "&outputsize=compact&apikey=BMOZOE9D5X9ECSP9";
+                    Log.d("queryString", "queryString " + queryString);
+
+                    Call<ResponseBody> call = alphaVantageApi.getResponse(queryString);
+
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(view.getContext(), "@string/error_message", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            try {
+                                responseString = response.body().string();
+                                Log.d("responseStringboi", "responseString: " + responseString);
+                            } catch (Exception e) {
+                                Log.d("responseString", "Something went wrong with responseString");
+                            }
+
+                            // get json text
+                            responseParser = new ResponseParser();
+                            JsonObject received = responseParser.responseToJsonObject(responseString);
+                            Log.d("receiveddd", "received: " + received);
+
+                                if (responseParser.errorHandler(received) == 1 || responseParser.errorHandler2(received) == 1) {
+                                    Toast.makeText(view.getContext(), "Invalid ticker or reached limit", Toast.LENGTH_LONG).show();
+                                } else if (responseParser.errorHandler(received) == 0 && responseParser.errorHandler2(received) == 0) {
+                                    // get time series data
+                                    Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
+
+                                    timeSeriesData = new LinkedList<>();
+                                    timeSeriesData = responseParser.parseTimeSeriesMap(ret);
+                                    Log.d("timeSeriesData", timeSeriesData.toString());
+
+                                    // chart
+                                    chart = view.findViewById(R.id.chart);
+
+                                    List<String> xAxisValues = new ArrayList<>();
+
+                                    // candle stick chart
+                                    ArrayList<CandleEntry> values = new ArrayList<>();
+
+                                    // load up linkedHashMaps
+                                    for (int i = 0; i < timeSeriesData.size(); i++) {
+                                        openPrices = timeSeriesData.get(0);
+                                        highPrices = timeSeriesData.get(1);
+                                        lowPrices = timeSeriesData.get(2);
+                                        closePrices = timeSeriesData.get(3);
+                                    }
+
+                                    int j = 0;
+
+                                    // load up values with <CandleEntry>
+                                    for (String key : openPrices.keySet()) {
+                                        values.add(new CandleEntry(
+                                                j,
+                                                highPrices.get(key).floatValue(),
+                                                lowPrices.get(key).floatValue(),
+                                                openPrices.get(key).floatValue(),
+                                                closePrices.get(key).floatValue())
+                                        );
+                                        xAxisValues.add(key);
+                                        j++;
+                                    }
+
+                                    // LineDataSet set1;
+                                    CandleDataSet set1;
+
+                                    set1 = new CandleDataSet(values, ".DJX points");
+                                    set1.setColor(Color.rgb(216, 27, 96));
+                                    set1.setShadowColor(Color.BLUE);
+                                    set1.setShadowWidth(0.8f);
+                                    set1.setDecreasingColor(Color.rgb(255, 0, 0));
+                                    set1.setDecreasingPaintStyle(Paint.Style.FILL);
+                                    set1.setIncreasingColor(Color.rgb(0, 255, 0));
+                                    set1.setIncreasingPaintStyle(Paint.Style.FILL);
+                                    set1.setNeutralColor(Color.LTGRAY);
+                                    set1.setDrawValues(false);
+
+                                    chart.setTouchEnabled(true);
+                                    chart.setDragEnabled(true);
+                                    chart.setScaleEnabled(true);
+                                    chart.setPinchZoom(true);
+                                    chart.setDrawGridBackground(false);
+                                    chart.setExtraLeftOffset(15);
+                                    chart.setExtraRightOffset(15);
+                                    chart.getXAxis().setDrawGridLines(true);
+                                    chart.getAxisLeft().setDrawGridLines(true);
+                                    chart.getAxisRight().setDrawGridLines(true);
+                                    chart.setHighlightPerDragEnabled(true);
+                                    chart.setDrawBorders(false);
+
+                                    YAxis rightYAxis = chart.getAxisRight();
+                                    rightYAxis.setEnabled(false);
+                                    YAxis leftYAxis = chart.getAxisLeft();
+                                    leftYAxis.setEnabled(true);
+                                    XAxis topXAxis = chart.getXAxis();
+                                    topXAxis.setEnabled(false);
+
+                                    // axes
+                                    XAxis xAxis = chart.getXAxis();
+                                    xAxis.setGranularity(5f);
+                                    xAxis.setCenterAxisLabels(true);
+                                    xAxis.setEnabled(true);
+                                    xAxis.setDrawGridLines(false);
+                                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+                                    set1.setDrawValues(false);
+
+                                    chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
+
+                                    CandleData data = new CandleData(set1);
+                                    chart.setData(data);
+                                    chart.invalidate();
+
+                                    // legend
+                                    Legend legend = chart.getLegend();
+                                    legend.setEnabled(true);
+                                    legend.setForm(Legend.LegendForm.LINE);
+                                    chart.getDescription().setEnabled(false);
+                                }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(view.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 }
-
-                try {
-                    responseString = response.body().string();
-                } catch (Exception e) {
-                    Log.d("responseString", "Something went wrong with responseString");
-                }
-
-                // get json text
-                responseParser = new ResponseParser();
-                JsonObject received = responseParser.responseToJsonObject(responseString);
-
-                // get time series data
-                Map<String, Map<String, Double>> ret = responseParser.getTimeSeries(received);
-
-                timeSeriesData = new LinkedList<>();
-                timeSeriesData = responseParser.parseTimeSeriesMap(ret);
-                Log.d("timeSeriesData", timeSeriesData.toString());
-
-                // chart
-                chart = view.findViewById(R.id.chart);
-
-                // old
-                /* ArrayList<Entry> values = new ArrayList<>();
-                ArrayList<ILineDataSet> dataSets = new ArrayList<>();*/
-                List<String> xAxisValues = new ArrayList<>();
-
-                // candle stick chart
-                ArrayList<CandleEntry> values = new ArrayList<>();
-
-                // int i = 0;
-
-                /*for (String key : timeSeriesData.keySet()) {
-                    // can only pray this works
-                    Log.d("keys", key);
-                    values.add(new Entry(i, timeSeriesData.get(key).intValue()));
-                    xAxisValues.add(key);
-                    i++;
-                } */
-
-                // load up linkedHashMaps
-                for (int i = 0; i < timeSeriesData.size(); i++) {
-                    openPrices = timeSeriesData.get(0);
-                    highPrices = timeSeriesData.get(1);
-                    lowPrices = timeSeriesData.get(2);
-                    closePrices = timeSeriesData.get(3);
-                }
-
-                int j = 0;
-
-                // load up values with <CandleEntry>
-                for (String key : openPrices.keySet()) {
-                    values.add(new CandleEntry(
-                            j,
-                            highPrices.get(key).floatValue(),
-                            lowPrices.get(key).floatValue(),
-                            openPrices.get(key).floatValue(),
-                            closePrices.get(key).floatValue())
-                    );
-                    xAxisValues.add(key);
-                    j++;
-                }
-
-                // LineDataSet set1;
-                CandleDataSet set1;
-
-                set1 = new CandleDataSet(values, ".DJX points");
-                set1.setColor(Color.rgb(216,27,96));
-                // set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                // set1.setDrawCircles(false);
-                set1.setShadowColor(Color.BLUE);
-                set1.setShadowWidth(0.8f);
-                set1.setDecreasingColor(Color.rgb(255, 0, 0));
-                set1.setDecreasingPaintStyle(Paint.Style.FILL);
-                set1.setIncreasingColor(Color.rgb(0, 255, 0));
-                set1.setIncreasingPaintStyle(Paint.Style.FILL);
-                set1.setNeutralColor(Color.LTGRAY);
-                set1.setDrawValues(false);
-                // dataSets.add(set1);
-
-                // customization
-                chart.setTouchEnabled(true);
-                chart.setDragEnabled(true);
-                chart.setScaleEnabled(true);
-                chart.setPinchZoom(true);
-                chart.setDrawGridBackground(false);
-                chart.setExtraLeftOffset(15);
-                chart.setExtraRightOffset(15);
-                chart.getXAxis().setDrawGridLines(true);
-                chart.getAxisLeft().setDrawGridLines(true);
-                chart.getAxisRight().setDrawGridLines(true);
-                chart.setHighlightPerDragEnabled(true);
-                chart.setDrawBorders(false);
-
-                YAxis rightYAxis = chart.getAxisRight();
-                rightYAxis.setEnabled(false);
-                YAxis leftYAxis = chart.getAxisLeft();
-                leftYAxis.setEnabled(true);
-                XAxis topXAxis = chart.getXAxis();
-                topXAxis.setEnabled(false);
-
-                // axes
-                XAxis xAxis = chart.getXAxis();
-                xAxis.setGranularity(5f);
-                xAxis.setCenterAxisLabels(true);
-                xAxis.setEnabled(true);
-                xAxis.setDrawGridLines(false);
-                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-                set1.setDrawValues(false);
-
-                chart.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.IndexAxisValueFormatter(xAxisValues));
-
-                CandleData data = new CandleData(set1);
-                chart.setData(data);
-                chart.invalidate();
-
-                // legend
-                Legend legend = chart.getLegend();
-                legend.setEnabled(true);
-                legend.setForm(Legend.LegendForm.LINE);
-                chart.getDescription().setEnabled(false);
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(view.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        // modified
+
 
         return view;
     }

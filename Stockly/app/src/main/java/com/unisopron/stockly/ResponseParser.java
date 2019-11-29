@@ -21,38 +21,63 @@ public class ResponseParser {
         return gson.fromJson(responseString, JsonObject.class);
     }
 
+    public int errorHandler(JsonObject received) {
+        try {
+            JsonElement errorMessage = received.getAsJsonPrimitive("Error Message");
+            Log.d("testError", errorMessage.toString());
+
+        } catch (Exception e) {
+            Log.d("errorHandlercatch", "ez van: " + e.getMessage());
+            return 0;
+        }
+        return 1;
+    }
+
+    public int errorHandler2(JsonObject received) {
+        try {
+            JsonElement errorMessage2 = received.getAsJsonPrimitive("Note");
+            Log.d("testError", errorMessage2.toString());
+
+        } catch (Exception e) {
+            Log.d("errorHandler2catch", "ez van2: " + e.getMessage());
+            return 0;
+        }
+        return 1;
+    }
+
     // get metadata from responseString
     public ArrayList<String> getMetadata(JsonObject received) {
-        JsonObject metaJson = received.get("Meta Data").getAsJsonObject();
 
-        // parse info
-        String information;
-        String symbol;
-        String lastRefreshed;
-        String outputSize;
-        String timeZone;
+            JsonObject metaJson = received.get("Meta Data").getAsJsonObject();
 
-        information = metaJson.get("1. Information").getAsString();
-        symbol = metaJson.get("2. Symbol").getAsString();
-        lastRefreshed = metaJson.get("3. Last Refreshed").getAsString();
-        outputSize = metaJson.get("4. Output Size").getAsString();
-        timeZone = metaJson.get("5. Time Zone").getAsString();
+            // parse info
+            String information;
+            String symbol;
+            String lastRefreshed;
+            String outputSize;
+            String timeZone;
 
-        // add to ArrayList
-        ArrayList<String> metadata = new ArrayList<String>();
-        metadata.add(information);
-        metadata.add(symbol);
-        metadata.add(lastRefreshed);
-        metadata.add(outputSize);
-        metadata.add(timeZone);
+            information = metaJson.get("1. Information").getAsString();
+            symbol = metaJson.get("2. Symbol").getAsString();
+            lastRefreshed = metaJson.get("3. Last Refreshed").getAsString();
+            outputSize = metaJson.get("4. Output Size").getAsString();
+            timeZone = metaJson.get("5. Time Zone").getAsString();
 
-        return metadata;
+            // add to ArrayList
+            ArrayList<String> metadata = new ArrayList<String>();
+            metadata.add(information);
+            metadata.add(symbol);
+            metadata.add(lastRefreshed);
+            metadata.add(outputSize);
+            metadata.add(timeZone);
+
+            return metadata;
     }
 
     public Map<String, Map<String, Double>> getTimeSeries(JsonObject received) {
         Map<String, Map<String, Double>> ret = new LinkedHashMap<>();
 
-        try {
+
             JsonObject timeSeries = received.get("Time Series (Daily)").getAsJsonObject();
 
             for (Map.Entry<String, JsonElement> e : timeSeries.entrySet()) {
@@ -64,55 +89,52 @@ public class ResponseParser {
                 toAdd.put("close", obj.get("4. close").getAsDouble());
                 ret.put(e.getKey(), toAdd);
             }
-        } catch (Exception e) {
-            Log.d("Gson", "Gson problem");
-        }
 
-        return ret;
+            return ret;
+
     }
 
     public  LinkedList<LinkedHashMap> parseTimeSeriesMap(Map<String, Map<String, Double>> timeSeriesData) {
         LinkedHashMap<String, Double> openPrices = new LinkedHashMap<String, Double>();
         LinkedHashMap<String, Double> highPrices = new LinkedHashMap<String, Double>();
         LinkedHashMap<String, Double> lowPrices = new LinkedHashMap<String, Double>();
-        LinkedHashMap<String, Double> closePrices = new LinkedHashMap<String, Double>();
+        LinkedHashMap<String, Double> closePrices = new LinkedHashMap<>();
 
         ArrayList<String> timeStamps = new ArrayList<>();
 
-        // to return a linkedlist of linkedhashmaps
-        LinkedList<LinkedHashMap> prices = new LinkedList<>();
 
-        for (String timeStamp : timeSeriesData.keySet()) {
-           /* double closePrice = timeSeriesData.get(timeStamp).get("close");
+            // to return a linkedlist of linkedhashmaps
+            LinkedList<LinkedHashMap> prices = new LinkedList<>();
 
-            closePrices.put(timeStamp, closePrice);*/
-           timeStamps.add(timeStamp);
-        }
+            for (String timeStamp : timeSeriesData.keySet()) {
+                timeStamps.add(timeStamp);
+            }
 
-        Collections.reverse(timeStamps);
-        Log.d("reversedkeys ", timeStamps.toString());
+            Collections.reverse(timeStamps);
+            Log.d("reversedkeys ", timeStamps.toString());
 
-        for (String timeStamp : timeStamps) {
-            double openPrice = timeSeriesData.get(timeStamp).get("open");
-            double highPrice = timeSeriesData.get(timeStamp).get("high");
-            double lowPrice = timeSeriesData.get(timeStamp).get("low");
-            double closePrice = timeSeriesData.get(timeStamp).get("close");
+            for (String timeStamp : timeStamps) {
+                double openPrice = timeSeriesData.get(timeStamp).get("open");
+                double highPrice = timeSeriesData.get(timeStamp).get("high");
+                double lowPrice = timeSeriesData.get(timeStamp).get("low");
+                double closePrice = timeSeriesData.get(timeStamp).get("close");
 
-            openPrices.put(timeStamp, openPrice);
-            highPrices.put(timeStamp, highPrice);
-            lowPrices.put(timeStamp, lowPrice);
-            closePrices.put(timeStamp, closePrice);
-        }
-        Log.d("openPrices: ", openPrices.toString());
-        Log.d("highPrices: ", highPrices.toString());
-        Log.d("lowPrices: ", lowPrices.toString());
-        Log.d("closePrices: ", closePrices.toString());
+                openPrices.put(timeStamp, openPrice);
+                highPrices.put(timeStamp, highPrice);
+                lowPrices.put(timeStamp, lowPrice);
+                closePrices.put(timeStamp, closePrice);
+            }
+            Log.d("openPrices: ", openPrices.toString());
+            Log.d("highPrices: ", highPrices.toString());
+            Log.d("lowPrices: ", lowPrices.toString());
+            Log.d("closePrices: ", closePrices.toString());
 
-        prices.add(openPrices);
-        prices.add(highPrices);
-        prices.add(lowPrices);
-        prices.add(closePrices);
+            prices.add(openPrices);
+            prices.add(highPrices);
+            prices.add(lowPrices);
+            prices.add(closePrices);
 
-        return prices;
+            return prices;
+
     }
 }
